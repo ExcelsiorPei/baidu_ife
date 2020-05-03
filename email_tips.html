@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #email-sug-wrapper{
+            width: 500px;
+            padding: 0px;
+        }
+        #email-sug-wrapper li{
+            height: 20px;
+            list-style-type: none;
+            color: rgba(44, 44, 44, 0.712);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <input id="email-input" type="text" oninput="inputDomEventListener()">
+        <ul id="email-sug-wrapper" class="email-sug"></ul>
+    </div>
+    <script>
+        var postfixList = ['163.com', 'gmail.com', '126.com', 'qq.com', '263.net'];
+        var inputElement = document.getElementById('email-input');
+        var ulELement = document.getElementById('email-sug-wrapper');
+        inputElement.focus();
+        //Dom的输入监听
+        var inputDomEventListener = function(){
+            sugWrapperHidden();
+            addToSugWrapper(ulELement, makeTipsList());
+            addMouseEvent();
+        }
+        //获取用户输入
+        function getInput(){
+            // var input_value = document.getElementById('email-input').value.trim();
+            // console.log(input_value);
+            return inputElement.value.trim();
+        }
+        //生成提示框中的提示内容
+        function makeTipsList(){
+            var input = getInput();
+            var before = '';
+            var li;
+            var liList = [];
+            var later = '';
+            if (input.search('@') == -1){
+                before = input;
+            }
+            else{
+                before = input.slice(0, input.search('@')); 
+                later = input.slice(input.search('@')+1);
+            }
+            for (const p in postfixList) {
+                li = document.createElement('li');
+                if (postfixList[p].indexOf(later) == 0){//有对应的前缀
+                    
+                    li.innerHTML = before + '@' + postfixList[p];
+                }
+                else{
+                    
+                    li.innerHTML = input + '@' + postfixList[p];
+                }
+                liList.push(li);
+            }
+            return liList;
+        }
+        //将提示内容添加到email-sug-wrapper中
+        function addToSugWrapper(element,childList){
+            while (element.hasChildNodes()){
+                element.removeChild(element.firstChild);
+            }
+            for (const c in childList) {
+                    element.appendChild(childList[c]);
+            }
+            // console.log(element.childNodes);
+            // console.log();
+        }
+        //控制email-sug-wrapper的显示/隐藏状态
+        function sugWrapperHidden(){
+            if (getInput() == ""){
+                hidden();
+            }
+            else{
+                display();
+            }
+            
+        }
+        //隐藏提示框
+        function hidden(){
+            ulELement.style.display = 'none';
+        }
+        //显示提示框
+        function display(element){
+            ulELement.style.display = 'block';
+        }
+        //添加鼠标事件
+        function addMouseEvent(){
+            var liList = ulELement.getElementsByTagName('li');
+            for (const l in liList){
+                liList[l].addEventListener("mouseover",changeColor);
+                liList[l].addEventListener("mousedown",clickChangeColor);
+                liList[l].addEventListener("mouseup",changeColor);
+                liList[l].addEventListener("mouseout",reductColor);
+                liList[l].addEventListener("click", printInput);
+                
+            }
+        }
+        //鼠标移到其上背景与字体变色
+        function changeColor(){
+            this.style.backgroundColor = 'rgba(109, 221, 255, 0.712)';
+            this.style.cursor = 'pointer';
+        }
+        //点击时背景变色
+        function clickChangeColor(){
+            this.style.backgroundColor = 'rgba(248, 105, 217, 0.712)';
+        }
+        //颜色恢复
+        function reductColor(){
+            this.style.backgroundColor = null;
+            this.style.color = 'rgba(44, 44, 44, 0.712)';
+        }//点击li将内容输入到input中
+        function printInput(){
+            inputElement.value = this.innerHTML;
+            ulELement.style.display = 'none';
+        }
+        // //添加键盘事件
+        // document.onkeydown = function(event){
+        //     var e = event || window.event || arguments.callee.caller.arguments[0];
+        //     if(e && e.keyCode==38){ // 按 ↑ 
+        //         if (nowSelectTipIndex != 0){
+        //             nowSelectTipIndex = ulELement.childNodes.length - 1;
+        //         }
+        //         else{
+        //             nowSelectTipIndex = nowSelectTipIndex - 1;
+        //         }
+        //     }
+        //     if(e && e.keyCode==40){ // 按 ↓ 
+        //          //要做的事情
+        //     }            
+        //      if(e && e.keyCode==13){ // enter 键
+        //          //要做的事情
+        //     }
+        // }
+    </script>
+</body>
+</html>
